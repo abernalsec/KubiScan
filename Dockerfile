@@ -1,11 +1,4 @@
-# Default to the Docker Hub container registry
-ARG DOCKER_REGISTRY=index.docker.io
-
-# Default to the official Python Debian image
-ARG PYTHON_IMAGE=${DOCKER_REGISTRY}/python:3.8.0-slim-buster
-
-
-FROM ${PYTHON_IMAGE} AS build-image
+FROM python:3.8 AS build-image
 
 WORKDIR /tmp/build-kubiscan
 COPY requirements.txt requirements.txt
@@ -22,7 +15,7 @@ COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
 
-FROM ${PYTHON_IMAGE} AS run-image
+FROM python:3.8 AS run-image
 # Copy Python packages installed in the build stage
 COPY --from=build-image /usr/local /usr/local
 
@@ -55,3 +48,5 @@ RUN set -ex \
 
 # Environment variable to know if running in a container
 ENV RUNNING_IN_A_CONTAINER=true
+
+ENTRYPOINT ["python3", "/opt/kubiscan/KubiScan.py"]
